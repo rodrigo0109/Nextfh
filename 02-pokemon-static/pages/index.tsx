@@ -35,7 +35,7 @@ export const getStaticProps: GetStaticProps = async(context) => {
     {
       ...p,
       id: i + 1,
-      img:`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${i + 1}.svg`
+      img:`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${i + 1}.svg`,
     }
   ))
 

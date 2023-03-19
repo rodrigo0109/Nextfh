@@ -3,7 +3,7 @@ import { Button, Card, Container, Grid, Text, Image } from "@nextui-org/react";
 import { GetStaticProps, GetStaticPaths, NextPage } from "next";
 import { pokeApi } from "../../api";
 import { Layout } from "../../components/layouts"
-import { Pokemon } from "../../interfaces";
+import { Pokemon, PokemonListResponse } from "../../interfaces";
 import { getPokemonInfo, localFavorites } from "../../utils";
 import confetti from 'canvas-confetti'
 
@@ -11,7 +11,7 @@ interface Props {
     pokemon: any;
 }
 
-const PokemonDetail: NextPage<Props> = ({ pokemon }) => {
+const PokemonByNamePage: NextPage<Props> = ({ pokemon }) => {
 
     const [isInFavorites, setisInFavorites] = useState(localFavorites.existInFavorites( pokemon.id ))
 
@@ -113,22 +113,12 @@ const PokemonDetail: NextPage<Props> = ({ pokemon }) => {
 
 export const getStaticPaths: GetStaticPaths = async (context) => {
 
-    const pokemons151 = [...Array(151)].map((value, index) => `${index + 1}`);
+    const { data } = await pokeApi.get<PokemonListResponse>('/pokemon?limit=151')
+    const pokemonNames: string[] = data.results.map(pokemon => pokemon.name)
 
     return {
-        /* paths: [
-            {
-                params: { id: '1' }
-            },
-            {
-                params: { id: '2' }
-            },
-            {
-                params: { id: '3' }
-            },
-        ], */
-        paths: pokemons151.map(id => ({
-            params: { id }
+        paths: pokemonNames.map(name => ({
+            params: { name }
         })),
         fallback: false
     }
@@ -136,13 +126,13 @@ export const getStaticPaths: GetStaticPaths = async (context) => {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
 
-    const { id } = params as { id: string }; //le doy el tipo a id
+    const { name } = params as { name: string };
 
     return {
         props: {
-            pokemon: await getPokemonInfo(id)
-        }, // will be passed to the page component as props
+            pokemon: await getPokemonInfo(name)
+        },
     }
 }
 
-export default PokemonDetail
+export default PokemonByNamePage
